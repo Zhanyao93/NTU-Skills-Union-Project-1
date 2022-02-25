@@ -15,11 +15,12 @@
         </div>
 
         <form class="f-container" id="url-box">
-            <input id="url-input" placeholder="Insert image URL here">
+            <input id="url-input" placeholder="Insert image URL here" autocomplete="off" autofocus>
             <button id="pin">Pin</button>
         </form>
 
         <div id="content-box">
+            <!-- 
             <div class="pin-container">
                 <div class="pin-bar">
                     <div class="pin-header"></div>
@@ -28,9 +29,18 @@
                 <div class="pin-img-frame">
                     <img class="pin-img" src="https://cdn.vox-cdn.com/thumbor/Y_Dnk1WA7RpVThKMxwZY9zbC_CM=/0x0:1200x800/920x613/filters:focal(504x304:696x496):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/59378243/ryzen.0.png">
                 </div>
+            </div> 
+            -->
+        </div>
+    </div>
+    <div id="popup-layout" class="f-container">
+        <div id="popup-panel">
+            <div id="popup-bar">
+                <div id="popup-title"></div>
+                <div id="popup-cross" onclick="closePopup()">X</div>
             </div>
-    
-
+            <img id="popup-img" src="">
+            <input id="popup-url" onclick="copyLink()">
         </div>
     </div>
 </body>
