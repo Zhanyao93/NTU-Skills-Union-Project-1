@@ -28,6 +28,7 @@ function pin(event) {
 
         store(url, title);
         prependElem(contentGrid, pinContainer);
+        //reset the input when pin successfully added
         document.querySelector("#url-input").value = "";
       }
     } 
@@ -132,9 +133,12 @@ function loadMap() {
 //copy input to clipboard
 function copyLink() {
     let copyText = document.querySelector("#popup-url");
+    let popup = document.querySelector(".popup-copy-text");
     copyText.select();
     copyText.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(copyText.value);
+    popup.style.animationName="popup-ani";
+    popup.addEventListener('animationend', () => popup.style.animationName="none");
 }
 
 // function for onload

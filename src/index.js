@@ -87,16 +87,18 @@ function imgPopup(element) {
     let title = layout.querySelector("#popup-title");
     let img = layout.querySelector("#popup-img");
     let url = layout.querySelector("#popup-url");
-    layout.style.display = "flex";
-    console.log(element.src);
+    layout.style.visibi = "flex";
+    //console.log(element.src);
     title.innerHTML = pinMap.get(element.src).title;
     img.src = element.src;
     url.value = element.src;
+    layout.style.animationName ="panel-popup";
 }
 
 function closePopup(element) {
     let popupLayout = document.querySelector("#popup-layout");
-    popupLayout.style.display = "none";
+    popupLayout.style.animationName ="none";
+    popupLayout.style.visibility = "hidden";
 }
 
 //function to check for dup
@@ -132,9 +134,12 @@ function loadMap() {
 //copy input to clipboard
 function copyLink() {
     let copyText = document.querySelector("#popup-url");
+    let popup = document.querySelector(".popup-copy-text");
     copyText.select();
     copyText.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(copyText.value);
+    popup.style.animationName="popup-ani";
+    popup.addEventListener('animationend', () => popup.style.animationName="none");
 }
 
 // function for onload
