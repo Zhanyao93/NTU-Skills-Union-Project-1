@@ -28,7 +28,6 @@ function pin(event) {
 
         store(url, title);
         prependElem(contentGrid, pinContainer);
-        //reset the input when pin successfully added
         document.querySelector("#url-input").value = "";
       }
     } 
@@ -88,16 +87,18 @@ function imgPopup(element) {
     let title = layout.querySelector("#popup-title");
     let img = layout.querySelector("#popup-img");
     let url = layout.querySelector("#popup-url");
-    layout.style.display = "flex";
-    console.log(element.src);
+    layout.style.visibi = "flex";
+    //console.log(element.src);
     title.innerHTML = pinMap.get(element.src).title;
     img.src = element.src;
     url.value = element.src;
+    layout.style.animationName ="panel-popup";
 }
 
 function closePopup(element) {
     let popupLayout = document.querySelector("#popup-layout");
-    popupLayout.style.display = "none";
+    popupLayout.style.animationName ="none";
+    popupLayout.style.visibility = "hidden";
 }
 
 //function to check for dup

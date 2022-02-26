@@ -45,8 +45,9 @@ function pin(event) {
 
 // generate out pins based on the localStorage
 function generate() {
-    //loop through all the keys(URL) and run function createPin for each URL
-    [...pinMap.keys()].forEach((elem) => createPin(elem));
+  contentGrid.innerHTML="";
+  //loop through all the keys(URL) and run function createPin for each URL
+  [...pinMap.keys()].forEach((elem) => createPin(elem));
 }
 
 function createPin(url) {
@@ -87,7 +88,7 @@ function imgPopup(element) {
     let title = layout.querySelector("#popup-title");
     let img = layout.querySelector("#popup-img");
     let url = layout.querySelector("#popup-url");
-    layout.style.visibi = "flex";
+    layout.style.visibility = "flex";
     //console.log(element.src);
     title.innerHTML = pinMap.get(element.src).title;
     img.src = element.src;
@@ -95,7 +96,7 @@ function imgPopup(element) {
     layout.style.animationName ="panel-popup";
 }
 
-function closePopup(element) {
+function closePopup() {
     let popupLayout = document.querySelector("#popup-layout");
     popupLayout.style.animationName ="none";
     popupLayout.style.visibility = "hidden";
@@ -147,6 +148,57 @@ function pageOnLoad() {
     loadMap();
     generate();
 };
+
+//expand search bar
+function expandSearch() {
+  let bar = document.querySelector("#content-search");
+  let searchBtn = document.querySelector("#content-search-btn");
+  bar.style.animationName = "expand-search";
+  bar.focus()
+  searchBtn.style.borderRadius = "0px 5px 5px 0px";
+};
+
+function shrinkSearch() {
+  let bar = document.querySelector("#content-search");
+  let searchBtn = document.querySelector("#content-search-btn");
+  bar.style.animationName = "shrink-search";
+  searchBtn.style.borderRadius = "5px";
+}
+
+function search(event, filterKey) {
+  if (event.key === 'Enter' || event.keyCode === 13) {
+    let searchString = document.querySelector("#content-search").value;
+    //break the string by space and remove empty element
+    let searchWordArr = searchString.split(" ").filter(elem => elem);
+    let filteredUrlArr = 
+    searchWordArr.reduce((accumArr, curWord)=> {
+      let urlArr = filter(curWord, filterKey);
+      urlArr.forEach(url => {
+        if (accumArr.indexOf(url) === -1) {
+          accumArr.push(url);
+        }
+      })
+      return accumArr
+    }, []);
+    if (filteredUrlArr.length != 0) {
+      contentGrid.innerHTML="";
+      filteredUrlArr.forEach((elem) => createPin(elem));
+    } else {
+      generate();
+    }
+  }
+}
+
+function filter(searchWord, filterKey) {
+  let regex = new RegExp(searchWord, "i");
+  let filteredKeys = [...pinMap.entries()]
+  .filter(array => regex.test(array[1][filterKey]))//returns array of arrays[[url, {title: "A"}], [url, {title: "B"}]]
+  .map((array => array[0]));
+  //console.log(regex);
+  //console.log(filteredKeys);
+  return filteredKeys;
+}
+
 
 pinButton.addEventListener("click", pin);
 window.addEventListener("load", pageOnLoad);

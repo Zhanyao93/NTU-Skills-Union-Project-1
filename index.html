@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./src/index.css"> 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script defer src="./src/index.js"></script>
     <title>Image archive</title>
 </head>
@@ -16,12 +17,17 @@
 
         <form class="f-container" id="url-box">
             <input id="url-input" placeholder="Insert image URL here" autocomplete="off" autofocus>
-            <button id="pin">Pin</button>
+            <button id="pin" title="Create a Pin for the URL">Pin</button>
         </form>
 
         <div id="content-container">
             <div id="content-box-bar">
+                <div id="refresh-container">
+                    <i id="content-refresh-btn" class="material-icons" onclick="generate()" title="Reset search">&#xe5d5;</i>   
+                </div>
                 <div id="content-box-bar-title">Collection</div>
+                <input id="content-search" onblur="shrinkSearch()" onkeyup="search(event,'title')">
+                <i id="content-search-btn" class="material-icons" onclick="expandSearch()" title="Search">&#xe8b6;</i>
             </div>
             <div id="content-box">
                 <!-- 
