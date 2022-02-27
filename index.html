@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./src/index.css"> 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script defer src="./src/index.js"></script>
     <title>Image archive</title>
 </head>
@@ -25,22 +26,19 @@
                 <div id="refresh-container">
                     <i id="content-refresh-btn" class="material-icons" onclick="generate()" title="Reset search">&#xe5d5;</i>   
                 </div>
-                <div id="content-box-bar-title">Collection</div>
+                <i id="delete-collection" class="material-icons" onclick="deleteCollection()">delete_forever</i>
+                <div id="content-box-bar-dropdown">
+                    <div id="content-box-bar-title"><i id="drop-button" onclick="toggleDrop()" class="material-icons">&#xe5c5;</i></div>
+                    <div id="dropdown-content-container">
+                        <div class="dropdown-content">
+                            <!-- item here -->
+                        </div>
+                    </div>
+                </div>
                 <input id="content-search" onblur="shrinkSearch()" onkeyup="search(event,'title')">
                 <i id="content-search-btn" class="material-icons" onclick="expandSearch()" title="Search">&#xe8b6;</i>
             </div>
             <div id="content-box">
-                <!-- 
-                <div class="pin-container">
-                    <div class="pin-bar">
-                        <div class="pin-header"></div>
-                        <div class="pin-cross">X</div>
-                    </div>
-                    <div class="pin-img-frame">
-                        <img class="pin-img" src="https://cdn.vox-cdn.com/thumbor/Y_Dnk1WA7RpVThKMxwZY9zbC_CM=/0x0:1200x800/920x613/filters:focal(504x304:696x496):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/59378243/ryzen.0.png">
-                    </div>
-                </div> 
-                -->
             </div>
         </div>
     </div>

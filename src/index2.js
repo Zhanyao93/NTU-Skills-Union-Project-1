@@ -1,7 +1,9 @@
 let contentGrid = document.querySelector("#content-box");
 let pinButton = document.querySelector("#pin");
+let collectionTitle = document.querySelector("#content-box-bar-title");
+let collectionList;
 let pinMap; //global variable to deal with url storage
-
+let curCollection = localStorage.getItem("currentCollection");
 
 // generate new Pin when the "Pin" button is pressed
 function pin(event) {
@@ -45,10 +47,11 @@ function pin(event) {
 
 // generate out pins based on the localStorage
 function generate() {
-    //loop through all the keys(URL) and run function createPin for each URL
-    [...pinMap.keys()].forEach((elem) => createPin(elem));
-}
-
+  contentGrid.innerHTML="";
+  //loop through all the keys(URL) and run function createPin for each URL
+  [...pinMap.keys()].forEach((elem) => createPin(elem));
+};
+// function to create pin based on url passed in (used in generate and search filter function)
 function createPin(url) {
     //console.log(url); for testing
     let img = new Image();
@@ -66,8 +69,7 @@ function createPin(url) {
                                     ${img.outerHTML}
                                 </div>`;
     prependElem(contentGrid, pinContainer);                         
-}
-
+};
 
 // function to remove pin from content area
 function deletePin(element) {
@@ -77,7 +79,7 @@ function deletePin(element) {
   if (confirm(`Are you sure you want to remove "${title}"`) == true) {
     pinContainer.remove();
     pinMap.delete(url);
-    localStorage.setItem("pinMap", JSON.stringify([...pinMap]));
+    localStorage.setItem(curCollection, JSON.stringify([...pinMap]));
   };
 };
 
@@ -87,19 +89,19 @@ function imgPopup(element) {
     let title = layout.querySelector("#popup-title");
     let img = layout.querySelector("#popup-img");
     let url = layout.querySelector("#popup-url");
-    layout.style.visibi = "flex";
+    layout.style.visibility = "flex";
     //console.log(element.src);
     title.innerHTML = pinMap.get(element.src).title;
     img.src = element.src;
     url.value = element.src;
     layout.style.animationName ="panel-popup";
-}
+};
 
-function closePopup(element) {
+function closePopup() {
     let popupLayout = document.querySelector("#popup-layout");
     popupLayout.style.animationName ="none";
     popupLayout.style.visibility = "hidden";
-}
+};
 
 //function to check for dup
 function duplicate(url) {
@@ -109,12 +111,12 @@ function duplicate(url) {
     return true;
   } 
   return false;
-}
+};
 
 // storing into local storage
 function store(url, title) {
     pinMap.set(url, {"title": title});
-    localStorage.setItem("pinMap", JSON.stringify([...pinMap]));
+    localStorage.setItem(curCollection, JSON.stringify([...pinMap]));
 };
 
 // so that latest added image appears at the front
@@ -124,11 +126,25 @@ function prependElem(parent, child) {
 
 // load localStorage for pinMap
 function loadMap() {
-    if (localStorage.getItem("pinMap") === null) {
-        pinMap = new Map();
-    } else {
-        pinMap = new Map(JSON.parse(localStorage.getItem("pinMap")));
-    };
+  if (localStorage.getItem(curCollection) === null) {
+    pinMap = new Map();
+    collectionList = JSON.parse(localStorage.getItem("collectionList"));
+    collectionList.push(curCollection);
+    localStorage.setItem(curCollection, JSON.stringify([...pinMap]));
+    localStorage.setItem("collectionList", JSON.stringify(collectionList));
+  } else {
+    pinMap = new Map(JSON.parse(localStorage.getItem(curCollection)));
+  };
+};
+
+// load the last collection
+function loadCollection() {
+  if (localStorage.getItem("currentCollection") === null) {
+    curCollection = "Default Collection";
+    localStorage.setItem("currentCollection", curCollection);
+    localStorage.setItem("collectionList", JSON.stringify([curCollection]));
+  } 
+  collectionTitle.innerHTML = curCollection + `<i id="drop-button" onclick="expandDrop()" class="material-icons">&#xe5c5;</i>`;
 };
 
 //copy input to clipboard
@@ -140,12 +156,128 @@ function copyLink() {
     navigator.clipboard.writeText(copyText.value);
     popup.style.animationName="popup-ani";
     popup.addEventListener('animationend', () => popup.style.animationName="none");
-}
+};
 
 // function for onload
 function pageOnLoad() {
+  loadCollection();
+  loadMap();
+  generate();
+  updateDrop();
+};
+
+//expand search bar (maybe can toggle instead)
+function expandSearch() {
+  let bar = document.querySelector("#content-search");
+  let searchBtn = document.querySelector("#content-search-btn");
+  bar.style.animationName = "expand-search";
+  bar.focus()
+  searchBtn.style.borderRadius = "0px 5px 5px 0px";
+};
+//shrink searchbar (maybe can toggle instead)
+function shrinkSearch() {
+  let bar = document.querySelector("#content-search");
+  let searchBtn = document.querySelector("#content-search-btn");
+  bar.style.animationName = "shrink-search";
+  searchBtn.style.borderRadius = "5px";
+};
+
+// break input text by "space" and check each word for matching title and return all
+// have to change if we want sort results to be inthe order they have been added to the collection
+function search(event, filterKey) {
+  if (event.key === 'Enter' || event.keyCode === 13) {
+    let searchString = document.querySelector("#content-search").value;
+    //break the string by space and remove empty element
+    let searchWordArr = searchString.split(" ").filter(elem => elem);
+    let filteredUrlArr = 
+    searchWordArr.reduce((accumArr, curWord)=> {
+      let urlArr = filter(curWord, filterKey);
+      urlArr.forEach(url => {
+        if (accumArr.indexOf(url) === -1) {
+          accumArr.push(url);
+        }
+      })
+      return accumArr
+    }, []);
+    if (filteredUrlArr.length != 0) {
+      contentGrid.innerHTML="";
+      filteredUrlArr.forEach((elem) => createPin(elem));
+    } else {
+      generate();
+    }
+  }
+};
+
+function filter(searchWord, filterKey) {
+  let regex = new RegExp(searchWord, "i");
+  let filteredKeys = [...pinMap.entries()]
+  .filter(array => regex.test(array[1][filterKey]))//returns array of arrays[[url, {title: "A"}], [url, {title: "B"}]]
+  .map((array => array[0]));
+  //console.log(regex);
+  //console.log(filteredKeys);
+  return filteredKeys;
+};
+
+function expandDrop() {
+  document.querySelector("#dropdown-content").style.visibility = "visible";
+};
+
+function closeDrop() {
+  document.querySelector("#dropdown-content").style.visibility = "collapse";
+};
+
+function updateDrop() {
+  let list = JSON.parse(localStorage.getItem("collectionList"));
+  document.querySelector("#dropdown-content").innerHTML = `<div class="dropdown-item" onclick="createCollection()">Create New</div>`;
+  list.forEach(collectionName => {
+    let item = document.createElement("div");
+    item.className = "dropdown-item";
+    item.innerHTML= collectionName;
+    item.setAttribute("onclick","collectionClick(this)");
+    document.querySelector("#dropdown-content").appendChild(item);
+  })
+};
+
+function changeCollection(newCollection) {
+  curCollection = newCollection;
+  localStorage.setItem("currentCollection", curCollection)
+  loadCollection();
+  loadMap();
+  generate();
+};
+
+function collectionClick(element) {
+  changeCollection(element.innerHTML);
+  closeDrop();
+};
+
+function createCollection() {
+  let collectionName = prompt("Please label the image");
+  if (collectionName == null || collectionName == "") {
+    alert("Collection name cannot be empty");
+  } else if (JSON.parse(localStorage.collectionList).some((existName) => existName == collectionName)) {
+    alert(`Collection("${collectionName}") already exist`);
+  } else {
+    changeCollection(collectionName);
+    updateDrop();
+    closeDrop();
+  }
+};
+
+function deleteCollection() {
+  if (confirm(`Delete collection("${curCollection}")?`) == true) {
+    localStorage.removeItem(curCollection);
+    let list = JSON.parse(localStorage.collectionList).filter(collection => collection != curCollection);
+    localStorage.setItem("collectionList", JSON.stringify(list));
+    if (JSON.parse(localStorage.collectionList).length != 0) {
+      newCollection = JSON.parse(localStorage.collectionList)[0];
+      changeCollection(newCollection);
+      updateDrop();
+    }
+    loadCollection();
     loadMap();
     generate();
+  }
 };
 
 pinButton.addEventListener("click", pin);
