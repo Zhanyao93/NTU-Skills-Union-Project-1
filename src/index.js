@@ -127,7 +127,7 @@ function prependElem(parent, child) {
 function loadMap() {
   if (localStorage.getItem(curCollection) === null) {
     pinMap = new Map();
-    collectionList = JSON.parse(localStorage.getItem("collectionList"));
+    let collectionList = JSON.parse(localStorage.getItem("collectionList"));
     collectionList.push(curCollection);
     localStorage.setItem(curCollection, JSON.stringify([...pinMap]));
     localStorage.setItem("collectionList", JSON.stringify(collectionList));
@@ -141,7 +141,7 @@ function loadCollection() {
   if (localStorage.getItem("currentCollection") === null) {
     curCollection = "Default Collection";
     localStorage.setItem("currentCollection", curCollection);
-    localStorage.setItem("collectionList", JSON.stringify([curCollection]));
+    localStorage.setItem("collectionList", JSON.stringify([]));
   } 
   collectionTitle.innerHTML = curCollection + `<i id="drop-button" onclick="toggleDrop()" class="material-icons">&#xe5c5;</i>`;
 };

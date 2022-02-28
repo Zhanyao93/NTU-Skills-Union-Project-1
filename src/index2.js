@@ -1,7 +1,6 @@
 let contentGrid = document.querySelector("#content-box");
 let pinButton = document.querySelector("#pin");
 let collectionTitle = document.querySelector("#content-box-bar-title");
-let collectionList;
 let pinMap; //global variable to deal with url storage
 let curCollection = localStorage.getItem("currentCollection");
 
@@ -144,7 +143,7 @@ function loadCollection() {
     localStorage.setItem("currentCollection", curCollection);
     localStorage.setItem("collectionList", JSON.stringify([curCollection]));
   } 
-  collectionTitle.innerHTML = curCollection + `<i id="drop-button" onclick="expandDrop()" class="material-icons">&#xe5c5;</i>`;
+  collectionTitle.innerHTML = curCollection + `<i id="drop-button" onclick="toggleDrop()" class="material-icons">&#xe5c5;</i>`;
 };
 
 //copy input to clipboard
@@ -218,23 +217,19 @@ function filter(searchWord, filterKey) {
   return filteredKeys;
 };
 
-function expandDrop() {
-  document.querySelector("#dropdown-content").style.visibility = "visible";
-};
-
-function closeDrop() {
-  document.querySelector("#dropdown-content").style.visibility = "collapse";
-};
+function toggleDrop() {
+  document.querySelector(".dropdown-content").classList.toggle('active');
+}
 
 function updateDrop() {
   let list = JSON.parse(localStorage.getItem("collectionList"));
-  document.querySelector("#dropdown-content").innerHTML = `<div class="dropdown-item" onclick="createCollection()">Create New</div>`;
+  document.querySelector(".dropdown-content").innerHTML = `<div class="dropdown-item" onclick="createCollection()">Create New</div>`;
   list.forEach(collectionName => {
     let item = document.createElement("div");
     item.className = "dropdown-item";
     item.innerHTML= collectionName;
     item.setAttribute("onclick","collectionClick(this)");
-    document.querySelector("#dropdown-content").appendChild(item);
+    document.querySelector(".dropdown-content").appendChild(item);
   })
 };
 
@@ -248,7 +243,7 @@ function changeCollection(newCollection) {
 
 function collectionClick(element) {
   changeCollection(element.innerHTML);
-  closeDrop();
+  toggleDrop();
 };
 
 function createCollection() {
@@ -260,7 +255,7 @@ function createCollection() {
   } else {
     changeCollection(collectionName);
     updateDrop();
-    closeDrop();
+    toggleDrop();
   }
 };
 
